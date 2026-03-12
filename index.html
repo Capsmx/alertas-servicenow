@@ -872,11 +872,14 @@ async function sendTorre(torre) {
   try {
     const resp = await fetch(config.webhook, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json'
+      },
+      mode: 'no-cors',
       body: JSON.stringify(payload)
     });
 
-    if (resp.ok || resp.status === 200) {
+    if (resp.ok || resp.status === 200 || resp.type === 'opaque') {
       btn.innerHTML = '✅ Enviado';
       btn.className = 'torre-send-btn sent';
       sentTorres.add(torre);
