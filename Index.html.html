@@ -691,14 +691,15 @@ let sheetsOK    = false;    // si Sheets está configurado
 async function sheetsCall(body) {
   if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes('PEGAR_URL')) return null;
   try {
-    const resp = await fetch(PROXY_URL, {
+    // Google Apps Script va directo, no necesita proxy
+    const resp = await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ target_url: APPS_SCRIPT_URL, ...body })
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(body),
+      redirect: 'follow'
     });
-    const json = await resp.json();
-    // Pipedream wraps response in json.response
-    return json.response || json;
+    const text = await resp.text();
+    try { return JSON.parse(text); } catch { return null; }
   } catch (e) {
     console.warn('Sheets error:', e.message);
     return null;
